@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 from core.domain.account import Account
 from core.domain.customer import Customer
@@ -12,4 +13,7 @@ class AccountStatement(BaseModel):
     transactions: List[Transaction]
 
     def __str__(self):
-        return f"AccountStatement(account={self.account}, customer={self.customer}, transactions={self.transactions})"
+        return (f"AccountStatement("
+                f"account={self.account}, "
+                f"customer={self.customer},"
+                f" transactions={self.transactions})")

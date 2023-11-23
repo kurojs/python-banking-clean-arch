@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlalchemy import ForeignKey, Integer, String, Float
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from core.domain.account import Account
 from core.repository.account import AccountRepository
@@ -11,8 +11,9 @@ class AccountModel(DeclarativeBase):
     __tablename__ = 'account'
     account_id: Mapped[int] = mapped_column('account_id', Integer,
                                             primary_key=True)
-    customer_id: Mapped[int] = mapped_column('customer_id', Integer,
-                                             ForeignKey('customer.customer_id'))
+    customer_id: Mapped[int] = mapped_column(
+        'customer_id',
+        Integer, ForeignKey('customer.customer_id'))
     account_number: Mapped[str] = mapped_column('account_number', String(255))
     balance: Mapped[float] = mapped_column('balance', Float, default=0.0)
 

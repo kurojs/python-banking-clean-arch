@@ -52,12 +52,12 @@ class TransactionRepositoryImpl(TransactionRepository):
         return TransactionMapper.to_domain(transaction_model)
 
     def list_by_account_id(self, account_id: int) -> List[Transaction]:
-        transaction_models = (self.session.query(TransactionModel)
-                              .filter(TransactionModel.account_id == account_id)
-                              .order_by(TransactionModel.created_at.desc())
-                              .all())
+        transaction_models = (
+            self.session.query(TransactionModel)
+            .filter(TransactionModel.account_id == account_id)
+            .order_by(TransactionModel.created_at.desc())
+            .all())
         if transaction_models is None:
             return []
         return [TransactionMapper.to_domain(transaction_model) for
                 transaction_model in transaction_models]
-

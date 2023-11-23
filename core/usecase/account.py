@@ -3,7 +3,6 @@ import uuid
 from pydantic import BaseModel
 
 from core.domain.account import Account
-from core.domain.customer import Customer
 from core.repository.account import AccountRepository
 from core.repository.customer import CustomerRepository
 
