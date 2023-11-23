@@ -8,8 +8,6 @@ class Account(BaseModel):
     customer_id: int
     account_number: str
     balance: float
-    created_at: datetime
-    updated_at: datetime
 
     def deposit(self, amount: float):
         self.balance += amount

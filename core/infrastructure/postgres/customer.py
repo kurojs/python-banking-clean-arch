@@ -1,67 +1,67 @@
 from typing import Optional
 
-from sqlalchemy import ForeignKey, Integer, String, Float
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from core.domain.account import Account
-from core.repository.account import AccountRepository
+from core.domain.customer import Customer
+from core.infrastructure.postgres.account import AccountModel
+from core.repository.customer import CustomerRepository
 
 
 class Base(DeclarativeBase):
     pass
 
 
-class AccountModel(Base):
-    __tablename__ = 'account'
-    account_id: Mapped[int] = mapped_column('account_id', Integer,
-                                            primary_key=True)
+class CustomerModel(Base):
+    __tablename__ = 'customer'
     customer_id: Mapped[int] = mapped_column('customer_id', Integer,
-                                             ForeignKey('customer.customer_id'))
-    account_number: Mapped[str] = mapped_column('account_number', String(255))
-    balance: Mapped[float] = mapped_column('balance', Float, default=0.0)
+                                             primary_key=True)
+    name: Mapped[str] = mapped_column('name', String(255))
+    email: Mapped[str] = mapped_column('email', String(255))
+    phone_number: Mapped[str] = mapped_column('phone_number', String(255))
 
 
-class AccountMapper:
+class CustomerMapper:
     @staticmethod
-    def to_domain(account: AccountModel) -> Account:
-        return Account(
-            account_id=account.account_id,
-            customer_id=account.customer_id,
-            account_number=account.account_number,
-            balance=account.balance,
+    def to_domain(customer: CustomerModel) -> Customer:
+        return Customer(
+            customer_id=customer.customer_id,
+            name=customer.name,
+            email=customer.email,
+            phone_number=customer.phone_number,
         )
 
     @staticmethod
-    def to_model(account: Account) -> AccountModel:
-        return AccountModel(
-            account_id=account.account_id,
-            customer_id=account.customer_id,
-            account_number=account.account_number,
-            balance=account.balance,
+    def to_model(customer: Customer) -> CustomerModel:
+        return CustomerModel(
+            customer_id=customer.customer_id,
+            name=customer.name,
+            email=customer.email,
+            phone_number=customer.phone_number,
         )
 
 
-class AccountRepositoryImpl(AccountRepository):
+class CustomerRepositoryImpl(CustomerRepository):
     def __init__(self, session):
         self.session = session
 
-    def create(self, account: Account) -> Account:
-        account_model = AccountMapper.to_model(account)
-        self.session.add(account_model)
+    def create(self, customer: Customer) -> Customer:
+        customer_model = CustomerMapper.to_model(customer)
+        self.session.add(customer_model)
         self.session.commit()
-        self.session.refresh(account_model)
-        return AccountMapper.to_domain(account_model)
+        self.session.refresh(customer_model)
+        return CustomerMapper.to_domain(customer_model)
 
-    def get(self, account_id: int) -> Optional[Account]:
-        account_model = self.session.query(AccountModel).filter(
-            AccountModel.account_id == account_id).first()
-        if account_model is None:
+    def get(self, customer_id: int) -> Optional[Customer]:
+        customer_model = self.session.query(CustomerModel).filter(
+            CustomerModel.customer_id == customer_id).first()
+        if customer_model is None:
             return None
-        return AccountMapper.to_domain(account_model)
+        return CustomerMapper.to_domain(customer_model)
 
-    def save(self, account: Account) -> Account:
-        account_model = AccountMapper.to_model(account)
-        self.session.merge(account_model)
-        self.session.commit()
-        self.session.refresh(account_model)
-        return AccountMapper.to_domain(account_model)
+    def get_by_account_id(self, account_id: int) -> Optional[Customer]:
+        customer_model = self.session.query(CustomerModel).filter(
+            AccountModel.account_id == account_id).first()
+        if customer_model is None:
+            return None
+        return CustomerMapper.to_domain(customer_model)

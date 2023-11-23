@@ -1,67 +1,63 @@
-from typing import Optional
+from typing import List
 
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from core.domain.customer import Customer
-from core.infrastructure.postgres.account import AccountModel
-from core.repository.customer import CustomerRepository
+from core.domain.transaction import Transaction
+from core.repository.transaction import TransactionRepository
 
 
-class Base(DeclarativeBase):
-    pass
+class TransactionModel(DeclarativeBase):
+    __tablename__ = 'transaction'
+    transaction_id: Mapped[int] = mapped_column('transaction_id', Integer,
+                                                primary_key=True)
+    account_id: Mapped[int] = mapped_column('account_id', Integer)
+    amount: Mapped[float] = mapped_column('amount', Integer)
+    transaction_type: Mapped[str] = mapped_column('transaction_type',
+                                                  String(255))
+    created_at: Mapped[str] = mapped_column('created_at', DateTime)
 
 
-class CustomerModel(Base):
-    __tablename__ = 'customer'
-    customer_id: Mapped[int] = mapped_column('customer_id', Integer,
-                                             primary_key=True)
-    name: Mapped[str] = mapped_column('name', String(255))
-    email: Mapped[str] = mapped_column('email', String(255))
-    phone_number: Mapped[str] = mapped_column('phone_number', String(255))
-
-
-class CustomerMapper:
+class TransactionMapper:
     @staticmethod
-    def to_domain(customer: CustomerModel) -> Customer:
-        return Customer(
-            customer_id=customer.customer_id,
-            name=customer.name,
-            email=customer.email,
-            phone_number=customer.phone_number,
+    def to_domain(transaction: TransactionModel) -> Transaction:
+        return Transaction(
+            transaction_id=transaction.transaction_id,
+            account_id=transaction.account_id,
+            amount=transaction.amount,
+            transaction_type=transaction.transaction_type,
+            created_at=transaction.created_at,
         )
 
     @staticmethod
-    def to_model(customer: Customer) -> CustomerModel:
-        return CustomerModel(
-            customer_id=customer.customer_id,
-            name=customer.name,
-            email=customer.email,
-            phone_number=customer.phone_number,
+    def to_model(transaction: Transaction) -> TransactionModel:
+        return TransactionModel(
+            transaction_id=transaction.transaction_id,
+            account_id=transaction.account_id,
+            amount=transaction.amount,
+            transaction_type=transaction.transaction_type,
+            created_at=transaction.created_at,
         )
 
 
-class CustomerRepositoryImpl(CustomerRepository):
+class TransactionRepositoryImpl(TransactionRepository):
     def __init__(self, session):
         self.session = session
 
-    def create(self, customer: Customer) -> Customer:
-        customer_model = CustomerMapper.to_model(customer)
-        self.session.add(customer_model)
+    def create(self, transaction: Transaction) -> Transaction:
+        transaction_model = TransactionMapper.to_model(transaction)
+        self.session.add(transaction_model)
         self.session.commit()
-        self.session.refresh(customer_model)
-        return CustomerMapper.to_domain(customer_model)
+        self.session.refresh(transaction_model)
+        return TransactionMapper.to_domain(transaction_model)
 
-    def get(self, customer_id: int) -> Optional[Customer]:
-        customer_model = self.session.query(CustomerModel).filter(
-            CustomerModel.customer_id == customer_id).first()
-        if customer_model is None:
-            return None
-        return CustomerMapper.to_domain(customer_model)
+    def list_by_account_id(self, account_id: int) -> List[Transaction]:
+        transaction_models = (self.session.query(TransactionModel)
+                              .filter(TransactionModel.account_id == account_id)
+                              .order_by(TransactionModel.created_at.desc())
+                              .all())
+        if transaction_models is None:
+            return []
+        return [TransactionMapper.to_domain(transaction_model) for
+                transaction_model in transaction_models]
 
-    def get_by_account_id(self, account_id: int) -> Optional[Customer]:
-        customer_model = self.session.query(CustomerModel).filter(
-            AccountModel.account_id == account_id).first()
-        if customer_model is None:
-            return None
-        return CustomerMapper.to_domain(customer_model)

@@ -1,0 +1,6 @@
+# Python .ignore
+.docker
+.venv
+poetry.lock
+
+**/__pycache__/

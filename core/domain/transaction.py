@@ -15,4 +15,3 @@ class Transaction(BaseModel):
     transaction_type: TransactionType
     account_id: int
     created_at: datetime
-    updated_at: datetime

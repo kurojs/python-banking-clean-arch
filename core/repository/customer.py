@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 
-from core.domain.account import Account
+from core.domain.customer import Customer
 
 
-class AccountRepository(ABC):
+class CustomerRepository(ABC):
     @abstractmethod
-    def create_account(self, account: Account) -> Account:
+    def create(self, customer: Customer) -> Customer:
         pass
 
     @abstractmethod
-    def get_account(self, account_id: int) -> Account:
+    def get(self, customer_id: int) -> Customer:
+        pass
+
+    @abstractmethod
+    def get_by_account_id(self, account_id: int) -> Customer:
         pass

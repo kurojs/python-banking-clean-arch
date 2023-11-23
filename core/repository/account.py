@@ -5,9 +5,13 @@ from core.domain.account import Account
 
 class AccountRepository(ABC):
     @abstractmethod
-    def create_account(self, account: Account) -> Account:
+    def create(self, account: Account) -> Account:
         pass
 
     @abstractmethod
-    def get_account(self, account_id: int) -> Account:
+    def get(self, account_id: int) -> Account:
+        pass
+
+    @abstractmethod
+    def save(self, account) -> Account:
         pass
