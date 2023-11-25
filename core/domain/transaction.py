@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -10,8 +11,8 @@ class TransactionType(Enum):
 
 
 class Transaction(BaseModel):
-    id: int
+    id: Optional[int] = None
     amount: float
     transaction_type: TransactionType
     account_id: int
-    created_at: datetime
+    created_at: datetime = datetime.now()

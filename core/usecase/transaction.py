@@ -1,18 +1,19 @@
-from pydantic import BaseModel
-
 from core.domain.transaction import Transaction, TransactionType
 from core.repository.account import AccountRepository
 from core.repository.transaction import TransactionRepository
 
 
-class TransactionUseCase(BaseModel):
+class TransactionUseCase:
     transaction_repo: TransactionRepository
     account_repo: AccountRepository
 
-    def make_transaction(
-            self, account_id: int, amount: float,
-            transaction_type: TransactionType
-    ) -> Transaction:
+    def __init__(self, transaction_repo: TransactionRepository,
+                 account_repo: AccountRepository):
+        self.transaction_repo = transaction_repo
+        self.account_repo = account_repo
+
+    def make_transaction(self, account_id: int, amount: float,
+                         transaction_type: TransactionType) -> Transaction:
         account = self.account_repo.get(account_id=account_id)
         if not account:
             raise Exception("Account not found")
@@ -29,7 +30,8 @@ class TransactionUseCase(BaseModel):
 
         # update account balance and create transaction
         self.account_repo.save(account=account)
-        transaction = Transaction(account_id=account_id, amount=amount,
+        transaction = Transaction(account_id=account_id,
+                                  amount=amount,
                                   transaction_type=transaction_type)
 
         return self.transaction_repo.create(transaction)

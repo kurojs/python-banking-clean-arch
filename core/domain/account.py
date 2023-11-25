@@ -1,11 +1,13 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class Account(BaseModel):
-    account_id: int
+    id: Optional[int] = None
+    account_number: Optional[str]
     customer_id: int
-    account_number: str
-    balance: float
+    balance: float = 0
 
     def deposit(self, amount: float):
         self.balance += amount
