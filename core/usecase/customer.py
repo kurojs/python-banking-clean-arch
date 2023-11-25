@@ -11,3 +11,6 @@ class CustomerUseCase:
     def create(self, name: str, email: str, phone_number: str):
         customer = Customer(name=name, email=email, phone_number=phone_number)
         return self.customer_repo.create(customer)
+
+    def get_customer(self, customer_id):
+        return self.customer_repo.get(customer_id)

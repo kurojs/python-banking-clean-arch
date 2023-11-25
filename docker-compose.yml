@@ -2,15 +2,15 @@ version: '3.7'
 
 # FastAPI server
 services:
-  fastapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-#    command: uvicorn app.main:app --reload --host
+#  fastapi:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - .:/app
+#    command: DB_DRIVER=postgresql uvicorn main:app --reload
 
   # Postgres database
   db:

@@ -42,3 +42,6 @@ class BankApp:
 
     def get_statement(self, account_id: int):
         return self.statement_usecase.get_statements(account_id)
+
+    def get_customer(self, customer_id):
+        return self.customer_usecase.get_customer(customer_id)

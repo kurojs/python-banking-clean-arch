@@ -21,33 +21,22 @@ class RepositoryProvider:
     engine: Engine = None
 
     def __init__(self):
-        if setting.DB_DRIVER == 'postgres':
+        if setting.DB_DRIVER == 'postgres' or setting.DB_DRIVER == 'postgresql':
             self.engine = initialize_postgres_db()
             self.session = scoped_session(sessionmaker(bind=self.engine))
             migrate()
+
+            self._account_repo = PgAccountRepository(self.engine, self.session)
+            self._transaction_repo = PgTransactionRepository(self.engine, self.session)
+            self._customer_repo = PgCustomerRepository(self.engine, self.session)
         else:
             raise ErrInvalidDBDriver
 
     def account_repo(self) -> AccountRepository:
-        if self._account_repo is None:
-            if setting.DB_DRIVER == 'postgres':
-                return PgAccountRepository(self.engine, self.session)
-            else:
-                raise ErrInvalidDBDriver
         return self._account_repo
 
     def transaction_repo(self) -> TransactionRepository:
-        if self._transaction_repo is None:
-            if setting.DB_DRIVER == 'postgres':
-                return PgTransactionRepository(self.engine, self.session)
-            else:
-                raise ErrInvalidDBDriver
         return self._transaction_repo
 
     def customer_repo(self) -> CustomerRepository:
-        if self._customer_repo is None:
-            if setting.DB_DRIVER == 'postgres':
-                return PgCustomerRepository(self.engine, self.session)
-            else:
-                raise ErrInvalidDBDriver
         return self._customer_repo
